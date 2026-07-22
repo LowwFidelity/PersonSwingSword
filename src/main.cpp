@@ -71,6 +71,8 @@ int main() {
         }
 
         if (isInventory) {
+            #define INVENTORY       CLITERAL(Color){ 130, 130, 130, 200 } //custom color for inventory panel
+            #define BACKGROUND      CLITERAL(Color){ 40, 40, 40, 200 }    //custom color for creating background fading
             DrawRectangle(0, 0, screenWidth, screenHeight, BACKGROUND);
             DrawRectangle(200, 200, screenWidth - 400, screenHeight - 400, INVENTORY);
             DrawRectangle(240, 240, 400, 600, BLACK);
