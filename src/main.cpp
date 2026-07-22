@@ -21,18 +21,30 @@ int main() {
     bool swordAttack = false;
     int attackDuration = 0;
     float cooldown = 0.0f;
+    bool isInventory = false;
 
     // Main game loop
     while (!WindowShouldClose())
     {
         float dt = GetFrameTime();
 
+		if (isInventory) dt = 0.0f;
+        
+		//player movement
         if (IsKeyDown(KEY_D)) playerPostion.x += playerSpeed * dt;
         if (IsKeyDown(KEY_A)) playerPostion.x -= playerSpeed * dt;
         if (IsKeyDown(KEY_W)) playerPostion.y -= playerSpeed * dt;
         if (IsKeyDown(KEY_S)) playerPostion.y += playerSpeed * dt;
 
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && cooldown <= 0.0f) {
+        //player inventory
+        if (IsKeyPressed(KEY_TAB))
+        {
+            if (isInventory == false) isInventory = true;
+            else if (isInventory == true) isInventory = false;
+        }
+
+		//player attack
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && cooldown <= 0.0f && !isInventory) {
             swordAttack = true;
             attackDuration = 15;
         }
@@ -48,13 +60,20 @@ int main() {
 
         Vector2 swordPosition = { playerPostion.x + playerSize.x, playerPostion.y + (playerSize.y / 2) };
 
+		//drawing
         BeginDrawing();
-
         ClearBackground(WHITE);
+
         DrawRectangleV(playerPostion, playerSize, RED);
         if (swordAttack) {
             DrawRectangleV(swordPosition, swordSize, BLUE);
             cooldown = 30.0f;
+        }
+
+        if (isInventory) {
+            DrawRectangle(0, 0, screenWidth, screenHeight, BACKGROUND);
+            DrawRectangle(200 , 200, screenWidth - 400, screenHeight - 400, INVENTORY);
+            DrawRectangle(240, 240, 400, 600, BLACK);
         }
 
         EndDrawing();
