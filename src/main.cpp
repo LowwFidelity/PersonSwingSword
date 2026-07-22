@@ -1,15 +1,14 @@
 ﻿#include <cstdlib>
+#include <string>
 #include "raylib.h"
 #include "config.h"
-#include "weapons.h"
-#include <string>
 
 using namespace std;
 
 const int screenWidth = 1920;
 const int screenHeight = 1080;
 
-struct sword {
+struct weapon {
     string name;
     float damage;
     float speed;
@@ -17,8 +16,8 @@ struct sword {
     float weight;
 };
 
-void WeaponSwing(float& cooldown, bool& isInventory, sword type, int& attackDuration, bool& swordAttack, Vector2& playerPostion, Vector2& playerSize, Vector2& swordSize);
-void Textures();
+void PlayerMovement(Vector2& playerPostion, float& playerSpeed, float& dt);
+void WeaponSwing(Texture2D& swordTexture, Vector2& swordPosition, float& cooldown, bool& isInventory, int& attackDuration, bool& swordAttack, Vector2& playerPostion, Vector2& playerSize, Vector2& swordSize);
 
 int main() {
     SetTraceLogLevel(LOG_NONE);
@@ -26,7 +25,9 @@ int main() {
     SetTargetFPS(60);
 
     //Textures
-    Texture2D swordTexture;
+    Image img = LoadImage("assets/graphics/Arrow.png");
+    ImageResizeNN(&img, 32, 32);
+    Texture2D swordTexture = LoadTextureFromImage(img);
 
     //Player Variables
     Vector2 playerPostion = { (float)screenWidth / 2, (float)screenHeight / 2 };
@@ -39,19 +40,18 @@ int main() {
     int attackDuration = 0;
     float cooldown = 0.0f;
     bool isInventory = false, crash = true;
-	sword type = { "Crap Sword", 10.0f, 1.0f, 0.0f, 5.0f };
+	Vector2 swordPosition = { playerPostion.x + playerSize.x / 2, playerPostion.y + playerSize.y / 2 };
+	weapon type = { "Crap Sword", 10.0f, 1.0f, 0.0f, 5.0f };
 
     // Main game loop
     while (!WindowShouldClose())
     {
-        Textures();
-
         float dt = GetFrameTime();
 
 		if (isInventory) dt = 0.0f;
 
         //player movement
-		PlayerMovement();
+        PlayerMovement(playerPostion, playerSpeed, dt);
         
         //player inventory
         if (IsKeyPressed(KEY_TAB))
@@ -64,7 +64,8 @@ int main() {
         ClearBackground(WHITE);
 
 		//player attack
-        WeaponSwing(cooldown, isInventory, type, attackDuration, swordAttack, playerPostion, playerSize, swordSize);
+		DrawRectangleV(playerPostion, playerSize, RED);
+        WeaponSwing(swordTexture, swordPosition, cooldown, isInventory, attackDuration, swordAttack, playerPostion, playerSize, swordSize);
 
         if (isInventory) {
             #define INVENTORY       CLITERAL(Color){ 130, 130, 130, 200 } //custom color for inventory panel
@@ -79,28 +80,23 @@ int main() {
         EndDrawing();
     }
 
-
     CloseWindow();
 
     return EXIT_SUCCESS;
 }
 
-void PlayerMovement()
+void PlayerMovement (Vector2& playerPostion, float& playerSpeed, float& dt)
 {
     //player movement
     if (IsKeyDown(KEY_D)) playerPostion.x += playerSpeed * dt;
     if (IsKeyDown(KEY_A)) playerPostion.x -= playerSpeed * dt;
     if (IsKeyDown(KEY_W)) playerPostion.y -= playerSpeed * dt;
     if (IsKeyDown(KEY_S)) playerPostion.y += playerSpeed * dt;
-
-
-
 }
 
-void WeaponSwing(float& cooldown, bool& isInventory, sword type, int& attackDuration, bool& swordAttack, Vector2& playerPostion, Vector2& playerSize, Vector2& swordSize)
+void WeaponSwing(Texture2D& swordTexture, Vector2& swordPosition, float& cooldown, bool& isInventory, int& attackDuration, bool& swordAttack, Vector2& playerPostion, Vector2& playerSize, Vector2& swordSize)
 {
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && cooldown <= 0.0f && !isInventory) {
-            Vector2 swordPosition = { playerPostion.x + playerSize.x, playerPostion.y + (playerSize.y / 2) };
             swordAttack = true;
             attackDuration = 15;
         }
@@ -109,19 +105,14 @@ void WeaponSwing(float& cooldown, bool& isInventory, sword type, int& attackDura
         }
         else if (!isInventory) {
             swordAttack = false;
+            UnloadTexture(swordTexture);
         }
         if (cooldown > 0.0f) {
             cooldown--;
         }
 
-        DrawRectangleV(playerPostion, playerSize, RED);
         if (swordAttack) {
-            swordTexture(swordPosition, swordSize, BLUE);
+            DrawTextureV(swordTexture, playerPostion, WHITE);
             cooldown = 30.0f;
         }
-}
-
-void Textures();
-{
-	Texture2D swordTexture = LoadTexture("Arrow.png");
 }
