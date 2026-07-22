@@ -2,12 +2,20 @@
 #include "raylib.h"
 #include "config.h"
 #include "weapons.h"
-#include "string.h"
+#include <string>
 
 using namespace std;
 
 const int screenWidth = 1920;
 const int screenHeight = 1080;
+
+struct sword {
+    string name;
+    float damage;
+    float speed;
+    float defense;
+    float weight;
+};
 
 void WeaponSwing(float& cooldown, bool& isInventory, struct& sword, int& attackDuration, bool& swordAttack, Vector2& playerPostion, Vector2& playerSize, Vector2& swordPosition, Vector2& swordSize);
 
