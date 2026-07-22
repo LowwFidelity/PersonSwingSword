@@ -51,7 +51,7 @@ int main() {
         if (attackDuration > 0) {
             attackDuration--;
         }
-        else {
+        else if (!isInventory) {
             swordAttack = false;
         }
         if (cooldown > 0.0f) {
@@ -72,7 +72,7 @@ int main() {
 
         if (isInventory) {
             DrawRectangle(0, 0, screenWidth, screenHeight, BACKGROUND);
-            DrawRectangle(200 , 200, screenWidth - 400, screenHeight - 400, INVENTORY);
+            DrawRectangle(200, 200, screenWidth - 400, screenHeight - 400, INVENTORY);
             DrawRectangle(240, 240, 400, 600, BLACK);
         }
 
