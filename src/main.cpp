@@ -4,6 +4,7 @@
 
 const int screenWidth = 1920;
 const int screenHeight = 1080;
+ shitf fuck ass
 
 int main() {
     SetTraceLogLevel(LOG_NONE);
