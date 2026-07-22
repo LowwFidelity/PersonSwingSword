@@ -10,6 +10,7 @@ int main() {
     InitWindow(screenWidth, screenHeight, Game::PROJECT_NAME);
     SetTargetFPS(60);
 
+    shitfuckass
 
     //Player Variables
     Vector2 playerPostion = { (float)screenWidth / 2, (float)screenHeight / 2 };
