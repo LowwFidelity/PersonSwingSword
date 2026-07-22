@@ -25,9 +25,9 @@ int main() {
     SetTargetFPS(60);
 
     //Textures
-    Image img = LoadImage("assets/graphics/Arrow.png");
+    Image img = LoadImage("assets/graphics/CrapSword.png");
     ImageResizeNN(&img, 32, 32);
-    Texture2D swordTexture = LoadTextureFromImage(img);
+    UnloadImage(img);
 
     //Player Variables
     Vector2 playerPostion = { (float)screenWidth / 2, (float)screenHeight / 2 };
@@ -62,6 +62,7 @@ int main() {
 
         BeginDrawing();
         ClearBackground(WHITE);
+        Texture2D swordTexture = LoadTextureFromImage(img);
 
 		//player attack
 		DrawRectangleV(playerPostion, playerSize, RED);
