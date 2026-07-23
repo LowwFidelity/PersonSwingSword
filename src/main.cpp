@@ -27,6 +27,7 @@ int main() {
     //Textures
     Image img = LoadImage("assets/graphics/CrapSword.png");
     ImageResizeNN(&img, 32, 32);
+    Texture2D swordTexture = LoadTextureFromImage(img);
     UnloadImage(img);
 
     //Player Variables
@@ -62,11 +63,14 @@ int main() {
 
         BeginDrawing();
         ClearBackground(WHITE);
-        Texture2D swordTexture = LoadTextureFromImage(img);
 
 		//player attack
 		DrawRectangleV(playerPostion, playerSize, RED);
         WeaponSwing(swordTexture, swordPosition, cooldown, isInventory, attackDuration, swordAttack, playerPostion, playerSize, swordSize);
+
+        if (swordAttack) {
+            DrawTextureV(swordTexture, swordPosition, WHITE);
+        }
 
         if (isInventory) {
             #define INVENTORY       CLITERAL(Color){ 130, 130, 130, 200 } //custom color for inventory panel
@@ -106,14 +110,12 @@ void WeaponSwing(Texture2D& swordTexture, Vector2& swordPosition, float& cooldow
         }
         else if (!isInventory) {
             swordAttack = false;
-            UnloadTexture(swordTexture);
         }
         if (cooldown > 0.0f) {
             cooldown--;
         }
 
         if (swordAttack) {
-            DrawTextureV(swordTexture, playerPostion, WHITE);
             cooldown = 30.0f;
         }
 }
