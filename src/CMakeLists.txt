@@ -18,7 +18,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(enet)
 
-add_executable(${PROJECT_NAME} main.cpp )
+add_executable(${PROJECT_NAME} main.cpp  "player.h")
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${enet_SOURCE_DIR}/include

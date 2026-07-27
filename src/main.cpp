@@ -1,7 +1,9 @@
-﻿#include <cstdlib>
+﻿#include <iostream>
+#include <cstdlib>
 #include <string>
-#include "raylib.h"
+#include <raylib.h>
 #include "config.h"
+#include "player.h"
 
 using namespace std;
 
@@ -10,76 +12,96 @@ const int screenHeight = 1080;
 
 struct weapon {
     string name;
+    int attackDuration;
+    bool swordAttack;
+    float cooldown;
     float damage;
     float speed;
     float defense;
     float weight;
 };
 
-void PlayerMovement(Vector2& playerPostion, float& playerSpeed, float& dt);
-void WeaponSwing(Texture2D& swordTexture, Vector2& swordPosition, float& cooldown, bool& isInventory, int& attackDuration, bool& swordAttack, Vector2& playerPostion, Vector2& playerSize, Vector2& swordSize);
+void WeaponSwing(Vector2& swordPosition, weapon& type, Vector2& playerPostion, Vector2& playerSize, Vector2& swordSize, float& angle, bool& isInventory);
+void OpenInventory(float& slide, float maxSlide, float realDt);
+//void WeaponSwing(Vector2& swordPosition, float& cooldown, bool& isInventory, int& attackDuration, bool& swordAttack, Vector2& playerPostion, Vector2& playerSize, Vector2& swordSize, float& angle);
+
 
 int main() {
     SetTraceLogLevel(LOG_NONE);
     InitWindow(screenWidth, screenHeight, Game::PROJECT_NAME);
+    ToggleFullscreen();
     SetTargetFPS(60);
 
     //Textures
+
     Image img = LoadImage("assets/graphics/CrapSword.png");
     ImageResizeNN(&img, 32, 32);
     Texture2D swordTexture = LoadTextureFromImage(img);
     UnloadImage(img);
 
+
     //Player Variables
-    Vector2 playerPostion = { (float)screenWidth / 2, (float)screenHeight / 2 };
+
+    player protag{ "Dusk", 100, 100, 10.0f, 200.0f, { (float)screenWidth / 2, (float)screenHeight / 2 } };
     Vector2 playerSize = { 50, 50 };
-    float playerSpeed = 200.0f;
 
     //Sword Variables
-    Vector2 swordSize = { 40, 10 };
+
+    Vector2 swordSize = { 32, 32 };
     bool swordAttack = false;
     int attackDuration = 0;
     float cooldown = 0.0f;
     bool isInventory = false, crash = true;
-	Vector2 swordPosition = { playerPostion.x + playerSize.x / 2, playerPostion.y + playerSize.y / 2 };
-	weapon type = { "Crap Sword", 10.0f, 1.0f, 0.0f, 5.0f };
+    Vector2 swordPosition = { protag.getPosition().x + playerSize.x, protag.getPosition().y + playerSize.y / 2 };
+    float angle = 0;
+
+    weapon crapSword = { "Crap Sword", 15, false, 30.0f, 10.0f, 1.0f, 0.0f, 0.0f };
+
+    //Inventory Variables
+
+    float slide = 0;
+    float maxSlide = screenWidth - 1140;
+
 
     // Main game loop
+
     while (!WindowShouldClose())
     {
-        float dt = GetFrameTime();
+        float realDt = GetFrameTime();
+        float gameDt;
 
-		if (isInventory) dt = 0.0f;
-
+        if (isInventory) {
+            gameDt = 0.0f;
+        }
+        else {
+            gameDt = realDt;
+        }
         //player movement
-        PlayerMovement(playerPostion, playerSpeed, dt);
-        
+
+        protag.movement(gameDt);
+
         //player inventory
+
         if (IsKeyPressed(KEY_TAB))
         {
             if (isInventory == false) isInventory = true;
-            else if (isInventory == true) isInventory = false;
+            else if (isInventory == true) isInventory = false, slide = 0;
         }
 
         BeginDrawing();
         ClearBackground(WHITE);
 
-		//player attack
-		DrawRectangleV(playerPostion, playerSize, RED);
-        WeaponSwing(swordTexture, swordPosition, cooldown, isInventory, attackDuration, swordAttack, playerPostion, playerSize, swordSize);
+        //player attack
 
-        if (swordAttack) {
-            DrawTextureV(swordTexture, swordPosition, WHITE);
+        DrawRectangleV(protag.getPosition(), playerSize, RED);
+        WeaponSwing(swordPosition, crapSword, protag.getPosition(), playerSize, swordSize, angle, isInventory);
+
+        if (crapSword.swordAttack) {
+            DrawTextureEx(swordTexture, swordPosition, angle, 1.0f, WHITE);
         }
 
         if (isInventory) {
-            #define INVENTORY       CLITERAL(Color){ 130, 130, 130, 200 } //custom color for inventory panel
-            #define BACKGROUND      CLITERAL(Color){ 40, 40, 40, 200 }    //custom color for creating background fading
-            DrawRectangle(0, 0, screenWidth, screenHeight, BACKGROUND);
-            for (int i = 0; i < screenWidth - 400; i++) {
-                DrawRectangle(200, 200, i, screenHeight - 400, INVENTORY);
-            }
-            DrawRectangle(240, 240, 400, 600, BLACK);
+            OpenInventory(slide, maxSlide, realDt);
         }
 
         EndDrawing();
@@ -90,32 +112,68 @@ int main() {
     return EXIT_SUCCESS;
 }
 
-void PlayerMovement (Vector2& playerPostion, float& playerSpeed, float& dt)
+void WeaponSwing(Vector2& swordPosition, weapon& type, Vector2& playerPostion, Vector2& playerSize, Vector2& swordSize, float& angle, bool& isInventory)
 {
-    //player movement
-    if (IsKeyDown(KEY_D)) playerPostion.x += playerSpeed * dt;
-    if (IsKeyDown(KEY_A)) playerPostion.x -= playerSpeed * dt;
-    if (IsKeyDown(KEY_W)) playerPostion.y -= playerSpeed * dt;
-    if (IsKeyDown(KEY_S)) playerPostion.y += playerSpeed * dt;
+   
+
+    if (IsKeyDown(KEY_D)) {
+        swordPosition = { playerPostion.x + playerSize.x, playerPostion.y + playerSize.y / 2 };
+        if (!type.swordAttack) {
+            angle = 00.0;
+        }
+    }
+    if (IsKeyDown(KEY_A)) {
+        swordPosition = { playerPostion.x, playerPostion.y + playerSize.y / 2 };
+        if (!type.swordAttack) {
+            angle = 180.0;
+        }
+    }
+    if (IsKeyDown(KEY_W)) {
+        swordPosition = { playerPostion.x + playerSize.x / 2, playerPostion.y };
+        if (!type.swordAttack) {
+            angle = 270.0;
+        }
+    }
+    if (IsKeyDown(KEY_S)) {
+        swordPosition = { playerPostion.x + playerSize.x, playerPostion.y + playerSize.y };
+        if (!type.swordAttack) {
+            angle = 90.0;
+        }
+    }
+ 
+
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && type.cooldown <= 0.0f && !isInventory) {
+        type.swordAttack = true;
+        type.attackDuration = 15;
+        type.cooldown = 30.0f;
+    }
+    if (type.attackDuration > 0) {
+        type.attackDuration--;
+    }
+    else if (!isInventory) {
+        type.swordAttack = false;
+    }
+    if (type.cooldown > 0.0f) {
+        type.cooldown--;
+    }
 }
 
-void WeaponSwing(Texture2D& swordTexture, Vector2& swordPosition, float& cooldown, bool& isInventory, int& attackDuration, bool& swordAttack, Vector2& playerPostion, Vector2& playerSize, Vector2& swordSize)
-{
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && cooldown <= 0.0f && !isInventory) {
-            swordAttack = true;
-            attackDuration = 15;
-        }
-        if (attackDuration > 0) {
-            attackDuration--;
-        }
-        else if (!isInventory) {
-            swordAttack = false;
-        }
-        if (cooldown > 0.0f) {
-            cooldown--;
-        }
+void OpenInventory(float& slide, float maxSlide, float realDt) {
+#define INVENTORY       CLITERAL(Color){ 130, 130, 130, 200 } //custom color for inventory panel
+#define BACKGROUND      CLITERAL(Color){ 40, 40, 40, 200 }    //custom color for creating background fading
 
-        if (swordAttack) {
-            cooldown = 30.0f;
+    DrawRectangle(0, 0, screenWidth, screenHeight, BACKGROUND);
+
+    if (slide <= maxSlide) {
+        DrawRectangle(570, 100, slide, screenHeight - 180, INVENTORY);
+        if (slide - 100 <= maxSlide) {
+            DrawRectangle(670, 140, slide - 200.0f, 500, BLACK);
         }
+        if (slide < maxSlide) {
+            slide += 2000.0f * realDt;
+            if (slide > maxSlide) {
+                slide = maxSlide;
+            }
+        }
+    }
 }
