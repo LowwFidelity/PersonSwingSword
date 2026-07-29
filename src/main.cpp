@@ -21,7 +21,7 @@ struct weapon {
     float weight;
 };
 
-void WeaponSwing(Vector2& swordPosition, weapon& type, player& protag, Vector2& playerSize, Vector2& swordSize, float& angle, bool& isInventory);
+void WeaponSwing(Vector2& swordPosition, weapon& type, player& protag, Vector2& playerSize, Vector2& swordSize, float& angle, bool& isInventory, string& direction);
 void OpenInventory(float& slide, float maxSlide, float realDt, player& protag);
 //void WeaponSwing(Vector2& swordPosition, float& cooldown, bool& isInventory, int& attackDuration, bool& swordAttack, Vector2& playerPostion, Vector2& playerSize, Vector2& swordSize, float& angle);
 
@@ -48,6 +48,7 @@ int main() {
 
     player protag{ "Dusk", 100, 100, 10.0f, 200.0f, { (float)screenWidth / 2, (float)screenHeight / 2 }, "right"};
     Vector2 playerSize = { 50, 50 };
+    string direction;
 	Camera2D camera = { 0 };
 	camera.target = protag.getPosition();
 	camera.offset = { (float)screenWidth / 2, (float)screenHeight / 2 };
@@ -112,7 +113,7 @@ int main() {
 
         DrawRectangleV(protag.getPosition(), playerSize, RED);
 
-        WeaponSwing(swordPosition, crapSword, protag, playerSize, swordSize, angle, isInventory);
+        WeaponSwing(swordPosition, crapSword, protag, playerSize, swordSize, angle, isInventory, direction);
 
         if (crapSword.swordAttack) {
             DrawTextureEx(swordTexture, swordPosition, angle, 1.0f, WHITE);
@@ -132,47 +133,43 @@ int main() {
     return EXIT_SUCCESS;
 }
 
-void WeaponSwing(Vector2& swordPosition, weapon& type, player& protag, Vector2& playerSize, Vector2& swordSize, float& angle, bool& isInventory)
+void WeaponSwing(Vector2& swordPosition, weapon& type, player& protag, Vector2& playerSize, Vector2& swordSize, float& angle, bool& isInventory, string& direction)
 {
-	string directionCooldown = protag.getDirection();
-
-    if (!type.swordAttack && direction == "right") {
-        swordPosition = { protag.getPosition().x + playerSize.x, protag.getPosition().y + playerSize.y / 2 };
-        if (directionCooldown ) {
-            angle = 00.0;
-        }
-    }
-    if (type.swordAttack == "left") {
-        swordPosition = { protag.getPosition().x, protag.getPosition().y + playerSize.y / 2 };
-        if (directionCooldown ) {
-            angle = 180.0;
-        }
-    }
-    if (type.swordAttack == "up") {
-        swordPosition = { protag.getPosition().x + playerSize.x / 2, protag.getPosition().y };
-        if (directionCooldown ) {
-            angle = 270.0;
-        }
-    }
-    if (type.swordAttack == "down") {
-        swordPosition = { protag.getPosition().x + playerSize.x, protag.getPosition().y + playerSize.y };
-        if (directionCooldown ) {
-            angle = 90.0;
-        }
-    }
-
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && type.cooldown <= 0.0f && !isInventory) {
         type.swordAttack = true;
         type.attackDuration = 15;
         type.cooldown = 30.0f;
-        directionCooldown = direction;
+		direction = protag.getDirection();
     }
+
+    if (type.swordAttack && direction == "right") {
+        swordPosition = { protag.getPosition().x + playerSize.x, protag.getPosition().y + playerSize.y / 2 };
+        angle = 00.0;
+    }
+
+    if (type.swordAttack && direction == "left") {
+        swordPosition = { protag.getPosition().x, protag.getPosition().y + playerSize.y / 2 };
+        angle = 180.0;
+    }
+
+    if (type.swordAttack && direction == "up") {
+        swordPosition = { protag.getPosition().x + playerSize.x / 2, protag.getPosition().y };
+        angle = 270.0;
+    }
+
+    if (type.swordAttack && direction == "down") {
+        swordPosition = { protag.getPosition().x + playerSize.x, protag.getPosition().y + playerSize.y };
+        angle = 90.0;
+    }
+
     if (type.attackDuration > 0) {
         type.attackDuration--;
     }
+
     else if (!isInventory) {
         type.swordAttack = false;
     }
+
     if (type.cooldown > 0.0f) {
         type.cooldown--;
     }
