@@ -4,6 +4,7 @@
 #include <raylib.h>
 #include "config.h"
 #include "player.h"
+#include "entity.h"
 
 using namespace std;
 
@@ -23,13 +24,13 @@ struct weapon {
 
 void WeaponSwing(Vector2& swordPosition, weapon& type, player& protag, Vector2& playerSize, Vector2& swordSize, float& angle, bool& isInventory, string& direction);
 void OpenInventory(float& slide, float maxSlide, float realDt, player& protag);
-void PlayerStats(player& protag);
+void PlayerStats(player& protag, float gameDt);
 void IsGameOver();
 
 int main() {
     SetTraceLogLevel(LOG_NONE);
     InitWindow(screenWidth, screenHeight, Game::PROJECT_NAME);
-    ToggleFullscreen();
+    //ToggleFullscreen();
     SetTargetFPS(60);
 
     //Textures
@@ -45,8 +46,8 @@ int main() {
 
 
     //Player Variables
-
     player protag{ "Dusk", 100, 100.0f, 10.0f, 200.0f, { (float)screenWidth / 2, (float)screenHeight / 2 }, "right"};
+    entity enemy{ "Enemy", 20, 10, 10, 10, { (float)screenWidth / 2, (float)screenHeight / 2 }, "right" };
     Vector2 playerSize = { 50, 50 };
     string direction;
 	Camera2D camera = { 0 };
@@ -115,6 +116,9 @@ int main() {
 
         WeaponSwing(swordPosition, crapSword, protag, playerSize, swordSize, angle, isInventory, direction);
 
+        DrawCircleLines(screenWidth/2, screenHeight/2, 100.0f, BLACK);
+        enemy.aggro(protag);
+
         if (crapSword.swordAttack) {
             DrawTextureEx(swordTexture, swordPosition, angle, 1.0f, WHITE);
         }
@@ -125,7 +129,7 @@ int main() {
 
         EndMode2D();
 
-        PlayerStats(protag);
+        PlayerStats(protag, gameDt);
 
         IsGameOver();
 
@@ -199,7 +203,7 @@ void OpenInventory(float& slide, float maxSlide, float realDt, player& protag) {
     }
 }
 
-void PlayerStats(player& protag) {
+void PlayerStats(player& protag, float gameDt) {
 #define PlayerBanner CLITERAL(Color){ 251, 194, 84, 190 } //custom color for player stats banner
 #define Health CLITERAL(Color){ 231, 67, 67, 255 } //custom color for player stats banner
 #define Stamina CLITERAL(Color){ 22, 149, 64, 255 } //custom color for player stats banner
@@ -207,7 +211,7 @@ void PlayerStats(player& protag) {
     DrawRectangle(0, screenHeight - 150, 500, 250, PlayerBanner);
     DrawRectangle(20, screenHeight - 140, protag.getHealth(0) * 4, 30, Health);
     DrawText(TextFormat("Health: %4i", protag.getHealth(0)), 25, screenHeight - 140, 30, BLACK);
-    DrawRectangle(20, screenHeight - 80, protag.getStamina(0) * 4, 30, Stamina);
+    DrawRectangle(20, screenHeight - 80, (int)protag.getStamina(0) * 4, 30, Stamina);
     DrawText(TextFormat("Stamina: %.0f", protag.getStamina(0)), 25, screenHeight - 80, 30, BLACK);
 
     if (IsKeyPressed(KEY_H)) {
@@ -215,15 +219,15 @@ void PlayerStats(player& protag) {
         protag.getHealth(dmg);
     }
     if (IsKeyDown(KEY_LEFT_SHIFT)) {
-        float sprint = 0.5f;
+        float sprint = 25.0f * gameDt;
         protag.getStamina(sprint);
     }
     else if (IsKeyUp(KEY_LEFT_SHIFT)) {
-        float recover = -0.25f;
+        float recover = -10.0f * gameDt;
 		protag.getStamina(recover);
     }
 }
 
 void IsGameOver() {
 
-} //Testing
+}

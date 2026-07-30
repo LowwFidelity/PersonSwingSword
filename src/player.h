@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 #include <raylib.h>
 
@@ -49,15 +50,26 @@ public:
 		return direction;
 	}
     int getHealth(int chg) {
-		if (health >= chg) health -= chg;
+        if (health >= chg) {
+            health -= chg;
+        }
         return health;
     }
     float getStamina(float chg) {
-		if (stamina > 0 && chg > 0) stamina -= chg;
-        else if (chg < 0 && stamina < 100) stamina -= chg;
+        if (stamina > 0 && chg > 0) {
+            stamina -= chg;
+        }
+        else if (chg < 0 && stamina < 100) {
+            stamina -= chg;
+        }
         return stamina;
     }
     float getDefense() {
         return defense;
+    }
+    Rectangle getHitbox() {
+        Rectangle hitbox;
+        hitbox = { position.x,position.y, 50, 50 };
+        return hitbox;
     }
 };
