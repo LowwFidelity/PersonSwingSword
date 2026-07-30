@@ -46,7 +46,7 @@ int main() {
 
     //Player Variables
 
-    player protag{ "Dusk", 100, 100, 10.0f, 200.0f, { (float)screenWidth / 2, (float)screenHeight / 2 }, "right"};
+    player protag{ "Dusk", 100, 100.0f, 10.0f, 200.0f, { (float)screenWidth / 2, (float)screenHeight / 2 }, "right"};
     Vector2 playerSize = { 50, 50 };
     string direction;
 	Camera2D camera = { 0 };
@@ -201,14 +201,26 @@ void OpenInventory(float& slide, float maxSlide, float realDt, player& protag) {
 
 void PlayerStats(player& protag) {
 #define PlayerBanner CLITERAL(Color){ 251, 194, 84, 190 } //custom color for player stats banner
+#define Health CLITERAL(Color){ 231, 67, 67, 255 } //custom color for player stats banner
+#define Stamina CLITERAL(Color){ 22, 149, 64, 255 } //custom color for player stats banner
 
     DrawRectangle(0, screenHeight - 150, 500, 250, PlayerBanner);
-    DrawRectangle(20, screenHeight - 140, protag.getHealth(0) * 4, 30, RED);
+    DrawRectangle(20, screenHeight - 140, protag.getHealth(0) * 4, 30, Health);
     DrawText(TextFormat("Health: %4i", protag.getHealth(0)), 25, screenHeight - 140, 30, BLACK);
+    DrawRectangle(20, screenHeight - 80, protag.getStamina(0) * 4, 30, Stamina);
+    DrawText(TextFormat("Stamina: %.0f", protag.getStamina(0)), 25, screenHeight - 80, 30, BLACK);
 
     if (IsKeyPressed(KEY_H)) {
 		int dmg = 10;
         protag.getHealth(dmg);
+    }
+    if (IsKeyDown(KEY_LEFT_SHIFT)) {
+        float sprint = 0.5f;
+        protag.getStamina(sprint);
+    }
+    else if (IsKeyUp(KEY_LEFT_SHIFT)) {
+        float recover = -0.25f;
+		protag.getStamina(recover);
     }
 }
 

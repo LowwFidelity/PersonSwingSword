@@ -7,14 +7,14 @@ class player {
 private:
     string name;
     int health;
-    int stamina;
+    float stamina;
     float defense;
     float speed;
     Vector2 position;
     string direction;
 
 public:
-    player(string n, int hp, int stm, float def, float spe, Vector2 pos, string dir) {
+    player(string n, int hp, float stm, float def, float spe, Vector2 pos, string dir) {
         name = n;
         health = hp;
         stamina = stm;
@@ -52,7 +52,9 @@ public:
 		if (health >= chg) health -= chg;
         return health;
     }
-    int getStamina() {
+    float getStamina(float chg) {
+		if (stamina > 0 && chg > 0) stamina -= chg;
+        else if (chg < 0 && stamina < 100) stamina -= chg;
         return stamina;
     }
     float getDefense() {
