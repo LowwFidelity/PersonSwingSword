@@ -23,8 +23,8 @@ struct weapon {
 
 void WeaponSwing(Vector2& swordPosition, weapon& type, player& protag, Vector2& playerSize, Vector2& swordSize, float& angle, bool& isInventory, string& direction);
 void OpenInventory(float& slide, float maxSlide, float realDt, player& protag);
-//void WeaponSwing(Vector2& swordPosition, float& cooldown, bool& isInventory, int& attackDuration, bool& swordAttack, Vector2& playerPostion, Vector2& playerSize, Vector2& swordSize, float& angle);
-
+void PlayerStats(player& protag);
+void IsGameOver();
 
 int main() {
     SetTraceLogLevel(LOG_NONE);
@@ -125,6 +125,10 @@ int main() {
 
         EndMode2D();
 
+        PlayerStats(protag);
+
+        IsGameOver();
+
         EndDrawing();
     }
 
@@ -193,4 +197,21 @@ void OpenInventory(float& slide, float maxSlide, float realDt, player& protag) {
             }
         }
     }
+}
+
+void PlayerStats(player& protag) {
+#define PlayerBanner CLITERAL(Color){ 251, 194, 84, 190 } //custom color for player stats banner
+
+    DrawRectangle(0, screenHeight - 150, 500, 250, PlayerBanner);
+    DrawRectangle(20, screenHeight - 140, protag.getHealth(0) * 4, 30, RED);
+    DrawText(TextFormat("Health: %4i", protag.getHealth(0)), 25, screenHeight - 140, 30, BLACK);
+
+    if (IsKeyPressed(KEY_H)) {
+		int dmg = 10;
+        protag.getHealth(dmg);
+    }
+}
+
+void IsGameOver() {
+
 }

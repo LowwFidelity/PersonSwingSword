@@ -48,5 +48,14 @@ public:
 	string getDirection() const {
 		return direction;
 	}
-
+    int getHealth(int chg) {
+		if (health >= chg) health -= chg;
+        return health;
+    }
+    int getStamina() {
+        return stamina;
+    }
+    float getDefense() {
+        return defense;
+    }
 };
