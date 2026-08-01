@@ -209,9 +209,11 @@ void PlayerStats(player& protag, float gameDt) {
 #define Stamina CLITERAL(Color){ 22, 149, 64, 255 } //custom color for player stats banner
 
     DrawRectangle(0, screenHeight - 150, 500, 250, PlayerBanner);
+    //Health bar
     DrawRectangle(20, screenHeight - 140, protag.getHealth(0) * 4, 30, Health);
     DrawText(TextFormat("Health: %4i", protag.getHealth(0)), 25, screenHeight - 140, 30, BLACK);
-    DrawRectangle(20, screenHeight - 80, (int)protag.getStamina(0) * 4, 30, Stamina);
+    //Stamina bar
+    DrawRectangle(20, screenHeight - 80, protag.getStamina(0) * 4, 30, Stamina);
     DrawText(TextFormat("Stamina: %.0f", protag.getStamina(0)), 25, screenHeight - 80, 30, BLACK);
 
     if (IsKeyPressed(KEY_H)) {
