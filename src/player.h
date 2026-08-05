@@ -100,11 +100,41 @@ public:
         DrawText(TextFormat("Stamina: %.0f", static_cast<float>(stamina)), 25, screenHeight - 80, 30, BLACK);
 
         if (IsKeyPressed(KEY_H)) {
-            int dmg = 10;
+            int dmg = 100;
             protag.getHealth(dmg);
         }
     }
     void draw() {
         DrawRectangleV(getstats().position, size, RED);
+    }
+
+    void OpenInventory(float& slide, float maxSlide, float realDt, int screenWidth, int screenHeight) {
+#define INVENTORY       CLITERAL(Color){ 130, 130, 130, 200 } //custom color for inventory panel
+#define BACKGROUND      CLITERAL(Color){ 40, 40, 40, 200 }    //custom color for creating background fading
+
+        DrawRectangleV({ 0, 0 }, { (float)screenWidth, (float)screenHeight }, BACKGROUND);
+
+        if (slide <= maxSlide) {
+            DrawRectangleV({ 570, 100 }, { slide, (float)screenHeight - 180 }, INVENTORY);
+            if (slide - 100 <= maxSlide) {
+                DrawRectangleV({ 670, 140 }, { slide - 200.0f, 500 }, BLACK);
+            }
+            if (slide < maxSlide) {
+                slide += 2000.0f * realDt;
+                if (slide > maxSlide) {
+                    slide = maxSlide;
+                }
+            }
+        }
+    }
+
+    void IsDead(int screenWidth, int screenHeight, Vector2 spawn) {
+        DrawRectangle(screenWidth / 2 - 155, screenHeight / 2 - 50, 365, 195, BLACK);
+        DrawText("Game Over", screenWidth / 2 - 100, screenHeight / 2, 50, RED);
+        DrawText("Press R to Restart", screenWidth / 2 - 125, screenHeight / 2 + 100, 30, RED);
+        if (IsKeyPressed(KEY_R)) {
+            health = 100;
+            position = spawn;
+        }
     }
 };

@@ -13,7 +13,7 @@ const int screenWidth = 1920;
 const int screenHeight = 1080;
 
 void OpenInventory(float& slide, float maxSlide, float realDt, player& protag);
-void IsGameOver();
+void IsGameOver(player& protag, float& realDt, Vector2& spawn);
 
 int main() {
     SetTraceLogLevel(LOG_NONE);
@@ -30,11 +30,12 @@ int main() {
 
     //Tilemap Variables
     tileMap map;
-    map.load("C:/PlayerSwingSword/assets/Tiles/Test Tile.png");
+    map.load("assets/Tiles/Test Tile.png");
     Vector2 mapBoundary = map.getWorldSize();
     Vector2 spawn = { mapBoundary.x / 2, mapBoundary.y / 2 };
 
     //Player Variables
+    bool isDead = false;
     player protag{ "Dusk", spawn, "right"};
     playerStats stats = protag.getstats();
     entity enemy{ "Enemy", 10, spawn, "right" };
@@ -59,7 +60,7 @@ int main() {
     {
         float realDt = GetFrameTime();
         float gameDt;
-        if (isInventory) {
+        if (isInventory || isDead) {
             gameDt = 0.0f;
         }
         else {
@@ -84,8 +85,8 @@ int main() {
         //Draw
         BeginDrawing();
         ClearBackground(BLACK);
-        
 
+        
         //Camera
         BeginMode2D(camera);
         map.draw();
@@ -100,40 +101,23 @@ int main() {
         EndMode2D();
 
         if (isInventory) {
-            OpenInventory(slide, maxSlide, realDt, protag);
+            protag.OpenInventory(slide, maxSlide, realDt, screenWidth, screenHeight);
         }
         protag.displayStats(protag, gameDt, screenHeight);
 
-        IsGameOver();
-
+        if (protag.getHealth(0) <= 0) {
+            isDead = true;
+            protag.IsDead(screenWidth, screenHeight, spawn);
+            realDt = 0;
+        }
+        else {
+            isDead = false;
+            realDt = GetFrameTime();
+        }
         EndDrawing();
     }
     map.unload();
     CloseWindow();
 
     return EXIT_SUCCESS;
-}
-
-
-void OpenInventory(float& slide, float maxSlide, float realDt, player& protag) {
-#define INVENTORY       CLITERAL(Color){ 130, 130, 130, 200 } //custom color for inventory panel
-#define BACKGROUND      CLITERAL(Color){ 40, 40, 40, 200 }    //custom color for creating background fading
-
-    DrawRectangleV({ 0, 0 }, { screenWidth, screenHeight }, BACKGROUND);
-
-    if (slide <= maxSlide) {
-        DrawRectangleV({ 570, 100 }, { slide, screenHeight - 180 }, INVENTORY);
-        if (slide - 100 <= maxSlide) {
-            DrawRectangleV({ 670, 140}, { slide - 200.0f, 500 }, BLACK);
-        }
-        if (slide < maxSlide) {
-            slide += 2000.0f * realDt;
-            if (slide > maxSlide) {
-                slide = maxSlide;
-            }
-        }
-    }
-}
-void IsGameOver() {
-
 }
