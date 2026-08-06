@@ -28,9 +28,11 @@ public:
         position = pos;
         direction = dir;
     }
+
     playerStats getstats() const {
         return { name, health, stamina, speed, size, position, direction };
     }
+
     void movement(float dt) {
         float currentSpeed = speed;
         float sprint = 25.0f * dt;
@@ -42,27 +44,31 @@ public:
         else if (IsKeyUp(KEY_LEFT_SHIFT)) {
             modifyStamina(recover);
         }
-        if (IsKeyDown(KEY_D)) {
-            position.x += currentSpeed * dt;
-            direction = "right";
-        }
-        if (IsKeyDown(KEY_A)) {
-            position.x -= currentSpeed * dt;
-            direction = "left";
-        }
 
         if (IsKeyDown(KEY_W)) {
             position.y -= currentSpeed * dt;
             direction = "up";
+            animation(direction);
         }
         if (IsKeyDown(KEY_S)) {
             position.y += currentSpeed * dt;
             direction = "down";
+            animation(direction);
+        }
+        if (IsKeyDown(KEY_D)) {
+            position.x += currentSpeed * dt;
+            direction = "right";
+            animation(direction);
+        }
+        if (IsKeyDown(KEY_A)) {
+            position.x -= currentSpeed * dt;
+            direction = "left";
+            animation(direction);
         }
     }
 
-    void animation() {
-
+    void animation(std::string direction) {
+        Texture2D playerTexture = LoadTexture("assets/")
     }
 
     Vector2 getPosition() const {
