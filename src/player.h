@@ -48,27 +48,20 @@ public:
         if (IsKeyDown(KEY_W)) {
             position.y -= currentSpeed * dt;
             direction = "up";
-            animation(direction);
         }
         if (IsKeyDown(KEY_S)) {
             position.y += currentSpeed * dt;
             direction = "down";
-            animation(direction);
         }
         if (IsKeyDown(KEY_D)) {
             position.x += currentSpeed * dt;
             direction = "right";
-            animation(direction);
         }
         if (IsKeyDown(KEY_A)) {
             position.x -= currentSpeed * dt;
             direction = "left";
-            animation(direction);
-        }
-    }
 
-    void animation(std::string direction) {
-        Texture2D playerTexture = LoadTexture("assets/")
+        }
     }
 
     Vector2 getPosition() const {

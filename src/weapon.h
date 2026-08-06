@@ -12,6 +12,7 @@ private:
     Vector2 swordPosition;
     Vector2 swordSize;
     float angle;
+    std::string direction;
 public:
     std::string setName(std::string nam) {
         name = nam;
@@ -20,28 +21,28 @@ public:
     void WeaponSwing(player& protag, bool& isInventory)
     {
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && cooldown <= 0.0f && !isInventory) {
+            direction = protag.getDirection();
             swordAttack = true;
             attackDuration = 15;
             cooldown = 30.0f;
-            protag.getDirection();
         }
 
-        if (swordAttack && protag.getDirection() == "right") {
+        if (attackDuration > 0 && direction == "right") {
             swordPosition = { protag.getPosition().x + protag.getstats().size.x, protag.getPosition().y + protag.getstats().size.y / 2};
             angle = 00.0;
         }
 
-        if (swordAttack && protag.getDirection() == "left") {
+        if (attackDuration > 0 && direction == "left") {
             swordPosition = { protag.getPosition().x, protag.getPosition().y + protag.getstats().size.y / 2};
             angle = 180.0;
         }
 
-        if (swordAttack && protag.getDirection() == "up") {
+        if (attackDuration > 0 && direction == "up") {
             swordPosition = { protag.getPosition().x + protag.getstats().size.x / 2, protag.getPosition().y};
             angle = 270.0;
         }
 
-        if (swordAttack && protag.getDirection() == "down") {
+        if (attackDuration > 0 && direction == "down") {
             swordPosition = { protag.getPosition().x + protag.getstats().size.x, protag.getPosition().y + protag.getstats().size.y};
             angle = 90.0;
         }
