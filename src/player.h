@@ -60,18 +60,22 @@ public:
             direction = "down";
         }
     }
+
     Vector2 getPosition() const {
         return position;
     }
+
 	std::string getDirection() const {
 		return direction;
 	}
+
     int getHealth(int chg) {
         if (health >= chg) {
             health -= chg;
         }
         return health;
     }
+
     float modifyStamina(float chg) {
         stamina -= chg;
         if (stamina < 0) {
@@ -82,10 +86,12 @@ public:
         }
         return stamina;
     }
+
     Rectangle getHitbox() {
         Rectangle hitbox = { position.x,position.y, size.x, size.y };
         return hitbox;
     }
+
     void displayStats(player& protag, float gameDt, int screenHeight) {
     #define PlayerBanner CLITERAL(Color){ 251, 194, 84, 190 } //custom color for player stats banner
     #define Health CLITERAL(Color){ 231, 67, 67, 255 } //custom color for player stats banner
@@ -104,6 +110,7 @@ public:
             protag.getHealth(dmg);
         }
     }
+
     void draw() {
         DrawRectangleV(getstats().position, size, RED);
     }
