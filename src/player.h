@@ -61,6 +61,10 @@ public:
         }
     }
 
+    void animation() {
+
+    }
+
     Vector2 getPosition() const {
         return position;
     }
