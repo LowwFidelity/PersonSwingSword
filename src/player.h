@@ -47,30 +47,21 @@ public:
 
         if (IsKeyDown(KEY_W)) {
             position.y -= currentSpeed * dt;
-            direction = "up";
         }
         if (IsKeyDown(KEY_S)) {
             position.y += currentSpeed * dt;
-            direction = "down";
         }
         if (IsKeyDown(KEY_D)) {
             position.x += currentSpeed * dt;
-            direction = "right";
         }
         if (IsKeyDown(KEY_A)) {
             position.x -= currentSpeed * dt;
-            direction = "left";
-
         }
     }
 
     Vector2 getPosition() const {
         return position;
     }
-
-	std::string getDirection() const {
-		return direction;
-	}
 
     int getHealth(int chg) {
         if (health >= chg) {

@@ -51,7 +51,7 @@ int main() {
     //Sword Variables    
     weapons crapSword;
     crapSword.setName("Crap Sword");
-    crapSword.WeaponSwing(protag, isInventory);
+    crapSword.WeaponSwing(protag, isInventory, camera);
 
     // Main game loop
 
@@ -72,7 +72,7 @@ int main() {
         camera.zoom = camera.zoom * (1.0f + (static_cast<float>(GetMouseWheelMove()) * 0.05f));
         if (camera.zoom > 4.0f) camera.zoom = 4.0f;
         else if (camera.zoom < 0.1f) camera.zoom = 0.1f;
-        crapSword.WeaponSwing(protag, isInventory);
+        crapSword.WeaponSwing(protag, isInventory, camera);
 
         //player inventory
         if (IsKeyPressed(KEY_TAB))
@@ -94,9 +94,11 @@ int main() {
 
         //Player Attack
         if (crapSword.getSwordAttack()) {
-            DrawTextureEx(swordTexture, crapSword.getPosition(), crapSword.getAngle(), 1.0f, WHITE);
+            Rectangle swordSource = { 0.0f, 0.0f, (float)swordTexture.width, (float)swordTexture.height };
+            Rectangle swordDest = { crapSword.getPosition().x, crapSword.getPosition().y, (float)swordTexture.width, (float)swordTexture.height };
+            Vector2 swordOrigin = { 0.0f, (float)swordTexture.height / 2.0f };
+            DrawTexturePro(swordTexture, swordSource, swordDest, swordOrigin, crapSword.getAngle(protag, camera), WHITE);
         }
-
         EndMode2D();
 
         if (isInventory) {

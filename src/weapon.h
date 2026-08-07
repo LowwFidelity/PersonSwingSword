@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <cmath>
 #include <raylib.h>
 #include "player.h"
 
@@ -12,39 +13,23 @@ private:
     Vector2 swordPosition;
     Vector2 swordSize;
     float angle;
-    std::string direction;
 public:
     std::string setName(std::string nam) {
         name = nam;
         return name;
     }
-    void WeaponSwing(player& protag, bool& isInventory)
+    void WeaponSwing(player& protag, bool& isInventory, Camera2D& camera)
     {
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && cooldown <= 0.0f && !isInventory) {
-            direction = protag.getDirection();
             swordAttack = true;
             attackDuration = 15;
             cooldown = 30.0f;
         }
 
-        if (attackDuration > 0 && direction == "right") {
-            swordPosition = { protag.getPosition().x + protag.getstats().size.x, protag.getPosition().y + protag.getstats().size.y / 2};
-            angle = 00.0;
-        }
-
-        if (attackDuration > 0 && direction == "left") {
-            swordPosition = { protag.getPosition().x, protag.getPosition().y + protag.getstats().size.y / 2};
-            angle = 180.0;
-        }
-
-        if (attackDuration > 0 && direction == "up") {
-            swordPosition = { protag.getPosition().x + protag.getstats().size.x / 2, protag.getPosition().y};
-            angle = 270.0;
-        }
-
-        if (attackDuration > 0 && direction == "down") {
-            swordPosition = { protag.getPosition().x + protag.getstats().size.x, protag.getPosition().y + protag.getstats().size.y};
-            angle = 90.0;
+        if (swordAttack) {
+            angle = getAngle(protag, camera);
+            swordPosition.x = (protag.getPosition().x + 8) + 16 * cosf(angle * DEG2RAD);
+            swordPosition.y = (protag.getPosition().y + 8) + 16 * sinf(angle * DEG2RAD);
         }
 
         if (attackDuration > 0) {
@@ -65,7 +50,15 @@ public:
     Vector2 getPosition() {
         return swordPosition;
     }
-    float getAngle() {
+    float getAngle(player& protag, Camera2D& camera) { 
+        Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), camera);
+
+        float dx = mouseWorldPos.x - protag.getPosition().x;
+        float dy = mouseWorldPos.y - protag.getPosition().y;
+
+        angle = atan2f(dy, dx) * RAD2DEG; 
+
+
         return angle;
     }
 };
